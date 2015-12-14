@@ -1,0 +1,12 @@
+{
+  "name": "HexagonAPI",
+  "description": "This is a simple hegagonAPI",
+  "version": "0.0.1",
+  "dependencies": {
+    "grunt": "*",
+    "grunt-contrib-uglify":"*",
+    "grunt-contrib-concat":"*",
+    "grunt-contrib-jshint":"*",
+    "grunt-contrib-watch":"*"
+  }
+}
