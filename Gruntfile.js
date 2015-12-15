@@ -9,7 +9,7 @@ module.exports = function(grunt) {
           sourceMap : true,
           sourceMapName : 'build/HexAPI.min.map',
           compress: {
-            drop_console: true
+          //  drop_console: true
           }
         },
         src : 'source/HexAPI.js',
@@ -29,9 +29,9 @@ module.exports = function(grunt) {
         files : {
           'source/HexAPI.js': [
             'source/classes/HexAPI.js',
+            'source/classes/Engine.js',
             'source/classes/Grid.js',
-            'source/classes/Hex.js',
-            'source/classes/Point.js'
+            'source/classes/Hex.js'
           ]
         }
       }
