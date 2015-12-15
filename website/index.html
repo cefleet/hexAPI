@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>HexTest</title>
+    <!--3d engine-->
+    <script src='../build/HexAPI.min.js'></script>
+
+</head>
+<body>
+  <script>
+    document.addEventListener( "DOMContentLoaded", HexAPI.setup(), false );
+
+    var drawFuncs = {
+      boxCenters: function(){
+        var map = HexAPI.defaultGrid.map;
+        for(var h in map){
+          var hex = map[h];
+          ctx.strokeRect(hex.centerPoint.x,hex.centerPoint.y,2,2);
+        }
+      },
+
+      drawHexes : function(){
+        var map = HexAPI.defaultGrid.map;
+        for(var h in map){
+          var hex = map[h];
+          var c = hex.corners;
+
+          ctx.beginPath();
+          ctx.moveTo(c[0].x,c[0].y);
+
+          for(var i = 1; i < c.length; i++){
+            ctx.lineTo(c[i].x,c[i].y);
+          }
+
+          ctx.lineTo(c[0].x,c[0].y);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.fillText(hex.id, hex.centerPoint.x-18,hex.centerPoint.y);
+        }
+      },
+
+      drawNeighbors: function(h){
+        var list = HexAPI.defaultGrid.map[h.q+'.'+h.r+'.'+h.s].neighbors;
+        drawFuncs.outlineList(list);
+      },
+
+      drawPerimeter : function(h,dist){
+        var l = HexAPI.engine.getHexesAtDistance(h,dist);
+
+        drawFuncs.outlineList(list);
+      },
+
+      drawWithin : function(h,dist){
+        var l = HexAPI.engine.getHexesWithinDistance(h,dist);
+        drawFuncs.outlineList(l);
+      },
+
+      convertList : function(l){
+        var list = [];
+        for(var i = 0; i < l.length; i++){
+          list.push(l[i].q+'.'+l[i].r+'.'+l[i].s);
+        }
+        return list;
+      },
+
+      outlineList : function(l){
+        var list = drawFuncs.convertList(l);
+        console.log(list);
+        ctx.strokeStyle = "#FF0000";
+        for(var i = 0; i < list.length; i++){
+          var hex = HexAPI.defaultGrid.map[list[i]];
+          var c = hex.corners;
+          ctx.beginPath();
+          ctx.moveTo(c[0].x,c[0].y);
+          for(var l = 1; l < c.length; l++){
+            ctx.lineTo(c[l].x,c[l].y);
+          }
+          ctx.lineTo(c[0].x,c[0].y);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      },
+
+      drawLineFromTo: function(hexA,hexB){
+        var line = hexA.makeStraightLineTo(hexB);
+        ctx.beginPath();
+        ctx.moveTo(line[0].x,line[0].y);
+        ctx.lineTo(line[1].x,line[1].y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+
+  </script>
+  <canvas id='canvas' height=800 width=800></canvas>
+<script>
+  ctx = document.getElementById('canvas').getContext('2d');
+
+  document.getElementById('canvas').addEventListener('click',function(evt){
+    var hex = HexAPI.engine.hexAtPoint(HexAPI.defaultGrid.layout,{x:evt.clientX, y:evt.clientY});
+    console.log(hex);
+    drawFuncs.drawWithin(hex,2);
+  },false);
+</script>
+</body>
+</html>

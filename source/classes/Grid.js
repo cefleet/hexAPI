@@ -7,7 +7,7 @@ HexAPI.Grid.prototype = {
     this.engine = HexAPI.engine;
 
     options = options || {};
-    this.hexSize = options.hexSize || {x:40,y:40};
+    this.hexSize = options.hexSize || {x:30,y:30};
     this.origion = options.origion || {x:0,y:0};
     this.orientation = options.orientation || 'flat';
 
@@ -17,6 +17,10 @@ HexAPI.Grid.prototype = {
     this.cols = options.cols || 20;
 
     this._createMap();
+  },
+
+  getHexAtPoint : function(p){
+    return this.engine.hexAtPoint(this.layout,p);
   },
 
   _createMap : function(){

@@ -27,6 +27,26 @@ HexAPI.Hex.prototype = {
     return this.neighbors[dir];
   },
 
+  getDistanceTo : function(hex){
+      return this.distanceBetween(this,hex);
+  },
+
+  getHexesWithinDistance : function(dist){
+    return this.engine.getHexesWithinDistance(this,dist);
+  },
+
+  getHexesAtDistance : function(dist){
+    return this.engine.getHexesAtDistance(this,dist);
+  },
+
+  makeHexLineTo : function(hex){
+    return this.engine._defineLineBetweenHexes(this, hex);
+  },
+
+  makeStraightLineTo : function(hex){
+    return [this.centerPoint,hex.centerPoint];
+  },
+
   _setCorners : function(){
     this.corners = this.engine.cornersOfHex(this.grid.layout,this);
   },
@@ -50,5 +70,11 @@ HexAPI.Hex.prototype = {
       var n = this.engine.neighborAtDirection(this,i);
       this.neighbors.push(n.q+'.'+n.r+'.'+n.s);
     }
-  }
+  },
+
+  //TODO LOS
+  /*
+    For now LOS is going to get all of the edges of the the "_defineLineBetweenHexes" and all of the neighbors and get and see if my line intersects with any of their edges
+  */
+  //TODO Movement with obstacle
 };

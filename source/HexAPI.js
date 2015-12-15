@@ -58,12 +58,12 @@ HexAPI.Engine.prototype = {
     return this.DIRECTIONS[d];
   },
 
-  _length : function(hex){
-    return Math.trunc((Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2);
-  },
-
-  _distance : function(hexA,hexB){
-    return this._length(this._hexSubtract(hexA, hexB));
+  distanceBetween : function(hexA,hexB){
+    return (
+      Math.abs(hexA.q - hexB.q) +
+      Math.abs(hexA.q+hexA.r-hexB.q-hexB.r) +
+      Math.abs(hexA.r-hexB.r)
+    )/2;
   },
 
   neighborAtDirection: function(hex, direction){
@@ -147,16 +147,40 @@ HexAPI.Engine.prototype = {
     return this._roundToHex(frHex);
   },
 
+  getHexesWithinDistance : function(hex,dist){
+    var results = [{q:hex.q,r:hex.r,s:hex.s}];
+    for(var i = 1; i <= dist; i++){
+      var n = this.getHexesAtDistance(hex,i);
+      for(var l = 0; l < n.length; l++){
+        results.push(n[l]);
+      }
+    }
+    return results;
+  },
+
+  getHexesAtDistance : function(hex,dis){
+    var results = [];
+    var pHex = this._hexAdd(hex,this._hexScale(this._direction(4), dis));
+    for(var i = 0; i < 6; i++){
+      for(var j = 0; j < dis; j++){
+        results.push(pHex);
+        pHex = this.neighborAtDirection(pHex,i);
+      }
+    }
+    return results;
+  },
+
   _hexLerp : function(a, b, t){
-    return this._hex(a.q + (b.q - a.q) * t, a.r + (b.r - a.r) * t, a.s + (b.s - a.s) * t);
+    return this._hex(a.q+(b.q-a.q)*t, a.r+(b.r-a.r)*t, a.s+(b.s-a.s)*t);
   },
 
   _defineLineBetweenHexes : function(a, b){
-    var N = this._distance(a, b);
+    var N = this.distanceBetween(a, b);
     var results = [];
     var step = 1.0 / Math.max(N, 1);
     for (var i = 0; i <= N; i++) {
-        results.push(this._roundToHex(this._hexLerp(a, b, step * i)));
+      var l = this._hexLerp(a, b, step*i);
+      results.push(this._roundToHex(l));
     }
     return results;
   }
@@ -172,7 +196,7 @@ HexAPI.Grid.prototype = {
     this.engine = HexAPI.engine;
 
     options = options || {};
-    this.hexSize = options.hexSize || {x:40,y:40};
+    this.hexSize = options.hexSize || {x:30,y:30};
     this.origion = options.origion || {x:0,y:0};
     this.orientation = options.orientation || 'flat';
 
@@ -182,6 +206,10 @@ HexAPI.Grid.prototype = {
     this.cols = options.cols || 20;
 
     this._createMap();
+  },
+
+  getHexAtPoint : function(p){
+    return this.engine.hexAtPoint(this.layout,p);
   },
 
   _createMap : function(){
@@ -245,6 +273,26 @@ HexAPI.Hex.prototype = {
     return this.neighbors[dir];
   },
 
+  getDistanceTo : function(hex){
+      return this.distanceBetween(this,hex);
+  },
+
+  getHexesWithinDistance : function(dist){
+    return this.engine.getHexesWithinDistance(this,dist);
+  },
+
+  getHexesAtDistance : function(dist){
+    return this.engine.getHexesAtDistance(this,dist);
+  },
+
+  makeHexLineTo : function(hex){
+    return this.engine._defineLineBetweenHexes(this, hex);
+  },
+
+  makeStraightLineTo : function(hex){
+    return [this.centerPoint,hex.centerPoint];
+  },
+
   _setCorners : function(){
     this.corners = this.engine.cornersOfHex(this.grid.layout,this);
   },
@@ -268,7 +316,13 @@ HexAPI.Hex.prototype = {
       var n = this.engine.neighborAtDirection(this,i);
       this.neighbors.push(n.q+'.'+n.r+'.'+n.s);
     }
-  }
+  },
+
+  //TODO LOS
+  /*
+    For now LOS is going to get all of the edges of the the "_defineLineBetweenHexes" and all of the neighbors and get and see if my line intersects with any of their edges
+  */
+  //TODO Movement with obstacle
 };
 
 //# sourceMappingURL=HexAPI.js.map
