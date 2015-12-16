@@ -5,7 +5,7 @@ HexAPI.Hex = function(options) {
 HexAPI.Hex.prototype = {
   _init: function(options){
     this.engine = HexAPI.engine;
-    this.grid = options.grid || HexAPI.defaultGrid;
+    this.grid = options.grid || HexAPI.grid;
 
     options = options || {};
     this.q = options.q || 0;
@@ -82,9 +82,5 @@ HexAPI.Hex.prototype = {
     }
   },
 
-  //TODO LOS
-  /*
-    For now LOS is going to get all of the edges of the the "_defineLineBetweenHexes" and all of the neighbors and get and see if my line intersects with any of their edges
-  */
-  //TODO Movement with obstacle
+
 };

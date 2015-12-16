@@ -8,11 +8,18 @@
 </head>
 <body>
   <script>
-    document.addEventListener( "DOMContentLoaded", HexAPI.setup(), false );
+    document.addEventListener( "DOMContentLoaded", HexAPI.setup(
+      {
+        grid : {
+          hexSize : {x:30,y:30},
+          orientation : 'flat'
+        }
+      }
+    ), false );
 
     var drawFuncs = {
       boxCenters: function(){
-        var map = HexAPI.defaultGrid.map;
+        var map = HexAPI.grid.map;
         for(var h in map){
           var hex = map[h];
           ctx.strokeRect(hex.centerPoint.x,hex.centerPoint.y,2,2);
@@ -20,7 +27,7 @@
       },
 
       drawHexes : function(){
-        var map = HexAPI.defaultGrid.map;
+        var map = HexAPI.grid.map;
         for(var h in map){
           var hex = map[h];
           var c = hex.corners;
@@ -40,7 +47,7 @@
       },
 
       drawNeighbors: function(h){
-        var list = HexAPI.defaultGrid.map[h.q+'.'+h.r+'.'+h.s].neighbors;
+        var list = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s].neighbors;
         drawFuncs.outlineList(list);
       },
 
@@ -73,7 +80,7 @@
         ctx.lineWidth = 6;
         ctx.strokeStyle = "#FF0000";
         for(var i = 0; i < list.length; i++){
-          var hex = HexAPI.defaultGrid.map[list[i]];
+          var hex = HexAPI.grid.map[list[i]];
           if(hex){
             var c = hex.corners;
             ctx.beginPath();
@@ -134,8 +141,8 @@
 
   document.getElementById('canvas').addEventListener('click',function(evt){
     var e = drawFuncs.getMousePosition();
-    var h = HexAPI.engine.hexAtPoint(HexAPI.defaultGrid.layout,{x:e[0], y:e[1]});
-    var hex = HexAPI.defaultGrid.map[h.q+'.'+h.r+'.'+h.s];
+    var h = HexAPI.engine.hexAtPoint(HexAPI.grid.layout,{x:e[0], y:e[1]});
+    var hex = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s];
     var hn = hex.diagonalNeighbors;
     var l = hn;
     l.push(hex.neighbors[2]);
@@ -146,17 +153,17 @@
     ctx.lineTo(hex.edges[2].p2.x,hex.edges[2].p2.y);
     ctx.closePath();
     ctx.stroke();
-    drawFuncs.drawLineFromTo(hex,HexAPI.defaultGrid.map[hn[2]]);
-    drawFuncs.drawLineFromTo(HexAPI.defaultGrid.map[hn[2]],HexAPI.defaultGrid.map[HexAPI.defaultGrid.map[hn[2]].diagonalNeighbors[2]]);
-    drawFuncs.drawLineFromTo(hex,HexAPI.defaultGrid.map[hn[1]]);
-    drawFuncs.drawLineFromTo(HexAPI.defaultGrid.map[hn[1]],HexAPI.defaultGrid.map[HexAPI.defaultGrid.map[hn[1]].diagonalNeighbors[1]]);
+    drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[2]]);
+    drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[2]],HexAPI.grid.map[HexAPI.grid.map[hn[2]].diagonalNeighbors[2]]);
+    drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[1]]);
+    drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[1]],HexAPI.grid.map[HexAPI.grid.map[hn[1]].diagonalNeighbors[1]]);
 
   },false);
 /*
   document.getElementById('canvas').addEventListener('mousemove', function(evt){
     var e = drawFuncs.getMousePosition();
-    var h = HexAPI.engine.hexAtPoint(HexAPI.defaultGrid.layout,{x:e[0], y:e[1]});
-    var hex = HexAPI.defaultGrid.map[h.q+'.'+h.r+'.'+h.s];
+    var h = HexAPI.engine.hexAtPoint(HexAPI.grid.layout,{x:e[0], y:e[1]});
+    var hex = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s];
     drawFuncs.outlineList([hex]);
   }, false);
 */
