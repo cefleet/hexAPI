@@ -11,8 +11,10 @@
     document.addEventListener( "DOMContentLoaded", HexAPI.setup(
       {
         grid : {
-          hexSize : {x:30,y:30},
-          orientation : 'flat'
+          hexSize : {x:20,y:20},
+          orientation : 'flat',
+          rows:50,
+          cols:30
         }
       }
     ), false );
@@ -30,8 +32,26 @@
         var map = HexAPI.grid.map;
         for(var h in map){
           var hex = map[h];
-          var c = hex.corners;
 
+          drawFuncs.drawHex(hex);
+          //ctx.fillText(hex.id, hex.centerPoint.x-18,hex.centerPoint.y);
+          ctx.stroke();
+        }
+
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = '#FF0000';
+        for(var l = 0; l < obstacles.length; l++){
+          var oH = drawFuncs.convertToRealHex(drawFuncs.convertToId(obstacles[l]));
+          drawFuncs.drawHex(oH);
+          ctx.fill();
+          ctx.stroke();
+        }
+        ctx.fillStyle = '#0000FF';
+      },
+
+      drawHex: function(hex){
+        if(hex){
+          var c = hex.corners;
           ctx.beginPath();
           ctx.moveTo(c[0].x,c[0].y);
 
@@ -41,19 +61,17 @@
 
           ctx.lineTo(c[0].x,c[0].y);
           ctx.closePath();
-          ctx.stroke();
-          ctx.fillText(hex.id, hex.centerPoint.x-18,hex.centerPoint.y);
         }
       },
 
       drawNeighbors: function(h){
-        var list = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s].neighbors;
+        var list = drawFuncs.convertToRealHex(drawFuncs.convertToId(h)).neighbors;
         drawFuncs.outlineList(list);
+
       },
 
       drawPerimeter : function(h,dist){
         var l = HexAPI.engine.getHexesAtDistance(h,dist);
-
         drawFuncs.outlineList(l);
       },
 
@@ -62,11 +80,11 @@
         drawFuncs.outlineList(l);
       },
 
-      convertList : function(l){
+      convertToListOfIds : function(l){
         var list = [];
         for(var i = 0; i < l.length; i++){
           if(typeof l[i] != 'string'){
-            list.push(l[i].q+'.'+l[i].r+'.'+l[i].s);
+            list.push(drawFuncs.convertToId(l[i]));
           } else {
             list.push(l[i]);
           }
@@ -74,13 +92,23 @@
         return list;
       },
 
+      convertToId : function(l){
+        if(l){
+          return l.q+'.'+l.r+'.'+l.s;
+        }
+      },
+
+      convertToRealHex : function(id){
+        return HexAPI.grid.map[id];
+      },
+
       outlineList : function(l){
-        drawFuncs.reset();
-        var list = drawFuncs.convertList(l);
+
+        var list = drawFuncs.convertToListOfIds(l);
         ctx.lineWidth = 6;
         ctx.strokeStyle = "#FF0000";
         for(var i = 0; i < list.length; i++){
-          var hex = HexAPI.grid.map[list[i]];
+          var hex = drawFuncs.convertToRealHex(list[i]);
           if(hex){
             var c = hex.corners;
             ctx.beginPath();
@@ -99,11 +127,62 @@
 
       drawLineFromTo: function(hexA,hexB){
         var line = hexA.makeStraightLineTo(hexB);
+        if(line){
+          ctx.beginPath();
+          ctx.moveTo(line[0].x,line[0].y);
+          ctx.lineTo(line[1].x,line[1].y);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      },
+
+      drawListOfLinesFromSource : function(source,dist){
+        dist = dist || 3;
+        var list = HexAPI.engine.getHexesWithinDistance(source,dist);
+        for(var i = 0; i < list.length; i++){
+          var h = drawFuncs.convertToRealHex(list[i].q+'.'+list[i].r+'.'+list[i].s);
+          drawFuncs.drawLineFromTo(source,h);
+        }
+      },
+
+      drawLOS : function(h,dist){
+        l = HexAPI.engine.getHexesWithinDistance(h,dist);
+        var list = [];
+        for(var i = 0; i < l.length; i++){
+          var add = true;
+          var hex = drawFuncs.convertToRealHex(drawFuncs.convertToId(l[i]));
+          var lin = h.makeStraightLineTo(hex);
+          for(var j = 0; j < obstacles.length; j++){
+            var o = drawFuncs.convertToRealHex(drawFuncs.convertToId(obstacles[j]));
+            if(lin && o){
+            if(o._checkIfLineCrosses(lin)){
+                add = false;
+                break;
+              }
+            }
+          }
+          if(add){
+            list.push(hex);
+          }
+        }
+          drawFuncs.outlineList(list);
+      },
+
+      drawDiagonalNeighborsAndStuf: function(hex){
+        var hn = hex.diagonalNeighbors;
+        var l = hn;
+        l.push(hex.neighbors[2]);
+        drawFuncs.outlineList(l);
+
         ctx.beginPath();
-        ctx.moveTo(line[0].x,line[0].y);
-        ctx.lineTo(line[1].x,line[1].y);
+        ctx.moveTo(hex.edges[2][0].x,hex.edges[2][0].y);
+        ctx.lineTo(hex.edges[2][1].x,hex.edges[2][1].y);
         ctx.closePath();
         ctx.stroke();
+        drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[2]]);
+        drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[2]],HexAPI.grid.map[HexAPI.grid.map[hn[2]].diagonalNeighbors[2]]);
+        drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[1]]);
+        drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[1]],HexAPI.grid.map[HexAPI.grid.map[hn[1]].diagonalNeighbors[1]]);
       },
 
       getMousePosition: function() {
@@ -138,35 +217,34 @@
   <canvas id='canvas' height=600 width=900></canvas>
 <script>
   ctx = document.getElementById('canvas').getContext('2d');
-
+  obstacles = [
+    {q:3,r:3,s:-6},
+    {q:12,r:4, s:-16},
+    {q:12,r:0,s:-12},
+    {q:22,r:0,s:-22},
+    {q:20,r:-3,s:-17},
+    {q:27,r:-10,s:-17}
+  ];
   document.getElementById('canvas').addEventListener('click',function(evt){
     var e = drawFuncs.getMousePosition();
     var h = HexAPI.engine.hexAtPoint(HexAPI.grid.layout,{x:e[0], y:e[1]});
-    var hex = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s];
-    var hn = hex.diagonalNeighbors;
-    var l = hn;
-    l.push(hex.neighbors[2]);
-    drawFuncs.outlineList(l);
-
-    ctx.beginPath();
-    ctx.moveTo(hex.edges[2].p1.x,hex.edges[2].p1.y);
-    ctx.lineTo(hex.edges[2].p2.x,hex.edges[2].p2.y);
-    ctx.closePath();
-    ctx.stroke();
-    drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[2]]);
-    drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[2]],HexAPI.grid.map[HexAPI.grid.map[hn[2]].diagonalNeighbors[2]]);
-    drawFuncs.drawLineFromTo(hex,HexAPI.grid.map[hn[1]]);
-    drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[1]],HexAPI.grid.map[HexAPI.grid.map[hn[1]].diagonalNeighbors[1]]);
+    var hex = drawFuncs.convertToRealHex(h.q+'.'+h.r+'.'+h.s);
+    drawFuncs.reset();
+    drawFuncs.drawLOS(hex,4);
 
   },false);
-/*
+
   document.getElementById('canvas').addEventListener('mousemove', function(evt){
     var e = drawFuncs.getMousePosition();
     var h = HexAPI.engine.hexAtPoint(HexAPI.grid.layout,{x:e[0], y:e[1]});
     var hex = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s];
+
+    drawFuncs.reset();
+    drawFuncs.drawLOS(hex,6);
     drawFuncs.outlineList([hex]);
+
   }, false);
-*/
+
 </script>
 </body>
 </html>

@@ -46,7 +46,11 @@ HexAPI.Hex.prototype = {
   },
 
   makeStraightLineTo : function(hex){
-    return [this.centerPoint,hex.centerPoint];
+    if(hex){
+      return [this.centerPoint,hex.centerPoint];
+    } else {
+      return false;
+    }
   },
 
   _setCorners : function(){
@@ -55,10 +59,10 @@ HexAPI.Hex.prototype = {
 
   _setEdges : function(){
     this.edges = [];
-    this.edges.push({p1:this.corners[5], p2:this.corners[0]});
+    this.edges.push([this.corners[5], this.corners[0]]);
     for(var i = 4; i >= 0; i--){
       var l = i+1;
-      this.edges.push({p1:this.corners[l], p2:this.corners[i]});
+      this.edges.push([this.corners[l], this.corners[i]]);
     }
   },
 
@@ -82,5 +86,17 @@ HexAPI.Hex.prototype = {
     }
   },
 
+  _checkIfLineCrosses : function(line){
+    var crosses = false;
+    for(var i = 0; i < this.edges.length; i++){
+      if(this.edges[i]){
+        if(this.engine.checkIfLinesIntersect(line,this.edges[i])){
+          crosses = true;
+          break;
+        }
+      }
+    }
+    return crosses;
+  },
 
 };
