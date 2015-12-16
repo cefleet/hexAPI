@@ -16,7 +16,7 @@ HexAPI.Engine.prototype = {
     this.ODD = -1;
     this._createLayout();
     this._createDirections();
-
+    this._createDiagonals();
   },
 
   _createLayout : function(){
@@ -24,11 +24,13 @@ HexAPI.Engine.prototype = {
       POINTY : this._orientation(Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5),
       FLAT : this._orientation(3.0 / 2.0, 0.0, Math.sqrt(3.0) / 2.0, Math.sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, Math.sqrt(3.0) / 3.0, 0.0)
     };
-
   },
-
   _createDirections : function(){
     this.DIRECTIONS = [this._hex(1, 0, -1), this._hex(1, -1, 0), this._hex(0, -1, 1,true), this._hex(-1, 0, 1), this._hex(-1, 1, 0), this._hex(0, 1, -1)];
+  },
+
+  _createDiagonals : function(){
+    this.DIAGONALS = [this._hex(2, -1, -1), this._hex(1, -2, 1), this._hex(-1, -1, 2), this._hex(-2, 1, 1), this._hex(-1, 2, -1), this._hex(1, 1, -2)];
   },
 
   _hex : function(q,r,s){
@@ -52,10 +54,11 @@ HexAPI.Engine.prototype = {
   },
 
   _direction : function(d){
-    if(!this.DIRECTIONS){
-      this._createDirections();
-    }
     return this.DIRECTIONS[d];
+  },
+
+  _diagonal : function(d){
+    return this.DIAGONALS[d];
   },
 
   distanceBetween : function(hexA,hexB){
@@ -67,8 +70,12 @@ HexAPI.Engine.prototype = {
   },
 
   neighborAtDirection: function(hex, direction){
-    var s = this._direction(direction);
-    return this._hexAdd(hex,s);
+    return this._hexAdd(hex,this._direction(direction));
+  },
+
+  neighborsAtDiagonal : function(hex, direction){
+    var n = this._diagonal(direction);
+    return this._hexAdd(hex, n);
   },
 
   _orientation: function(f0, f1, f2, f3, b0, b1, b2, b3, start_angle) {
@@ -129,7 +136,11 @@ HexAPI.Engine.prototype = {
   cornersOfHex : function(layout, h){
     var corners = [];
     var center = this.centerOfHex(layout, h);
-    for (var i = 0; i < 6; i++){
+    for (var i = 1; i <= 6; i++){
+        l = i;
+        if(l === 6){
+          l = 0;
+        }
         var offset = this._cornerOffset(layout, i);
         corners.push(this._point(center.x + offset.x, center.y + offset.y));
     }
@@ -267,6 +278,8 @@ HexAPI.Hex.prototype = {
     this._setEdges();
 
     this._setNeighbors();
+
+    this._setDiagonalNeighbors();
   },
 
   getNeighborAt : function(dir){
@@ -299,11 +312,11 @@ HexAPI.Hex.prototype = {
 
   _setEdges : function(){
     this.edges = [];
-
-    for(var i = 1; i < 6; i++){
-      this.edges.push({p1:this.corners[i-1], p2:this.corners[i]});
-    }
     this.edges.push({p1:this.corners[5], p2:this.corners[0]});
+    for(var i = 4; i >= 0; i--){
+      var l = i+1;
+      this.edges.push({p1:this.corners[l], p2:this.corners[i]});
+    }
   },
 
   _setCenter : function(){
@@ -315,6 +328,14 @@ HexAPI.Hex.prototype = {
     for(var i = 0; i < 6; i++){
       var n = this.engine.neighborAtDirection(this,i);
       this.neighbors.push(n.q+'.'+n.r+'.'+n.s);
+    }
+  },
+
+  _setDiagonalNeighbors : function(){
+    this.diagonalNeighbors = [];
+    for(var i = 0; i < 6; i++){
+      var n = this.engine.neighborsAtDiagonal(this,i);
+      this.diagonalNeighbors.push(n.q+'.'+n.r+'.'+n.s);
     }
   },
 

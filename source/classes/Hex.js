@@ -21,6 +21,8 @@ HexAPI.Hex.prototype = {
     this._setEdges();
 
     this._setNeighbors();
+
+    this._setDiagonalNeighbors();
   },
 
   getNeighborAt : function(dir){
@@ -53,11 +55,11 @@ HexAPI.Hex.prototype = {
 
   _setEdges : function(){
     this.edges = [];
-
-    for(var i = 1; i < 6; i++){
-      this.edges.push({p1:this.corners[i-1], p2:this.corners[i]});
-    }
     this.edges.push({p1:this.corners[5], p2:this.corners[0]});
+    for(var i = 4; i >= 0; i--){
+      var l = i+1;
+      this.edges.push({p1:this.corners[l], p2:this.corners[i]});
+    }
   },
 
   _setCenter : function(){
@@ -69,6 +71,14 @@ HexAPI.Hex.prototype = {
     for(var i = 0; i < 6; i++){
       var n = this.engine.neighborAtDirection(this,i);
       this.neighbors.push(n.q+'.'+n.r+'.'+n.s);
+    }
+  },
+
+  _setDiagonalNeighbors : function(){
+    this.diagonalNeighbors = [];
+    for(var i = 0; i < 6; i++){
+      var n = this.engine.neighborsAtDiagonal(this,i);
+      this.diagonalNeighbors.push(n.q+'.'+n.r+'.'+n.s);
     }
   },
 
