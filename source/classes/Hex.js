@@ -30,7 +30,7 @@ HexAPI.Hex.prototype = {
   },
 
   getDistanceTo : function(hex){
-      return this.distanceBetween(this,hex);
+      return this.engine.distanceBetween(this,hex); 
   },
 
   getHexesWithinDistance : function(dist){
