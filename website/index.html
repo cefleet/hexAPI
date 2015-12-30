@@ -185,6 +185,11 @@
         drawFuncs.drawLineFromTo(HexAPI.grid.map[hn[1]],HexAPI.grid.map[HexAPI.grid.map[hn[1]].diagonalNeighbors[1]]);
       },
 
+      drawPath : function(startHex,toHex){
+        var path = startHex.getPathTo(toHex,obstacles);
+        drawFuncs.outlineList(path);
+      },
+
       getMousePosition: function() {
         var x = new Number();
         var y = new Number();
@@ -223,12 +228,17 @@
     {q:12,r:0,s:-12},
     {q:22,r:0,s:-22},
     {q:20,r:-3,s:-17},
-    {q:27,r:-10,s:-17}
+    {q:27,r:-10,s:-17},
+    {q:12,r:3,s:-15}, //"12.2.-14"
+    {q:12,r:2,s:-14},
+    {q:16,r:-1,s:-15}
   ];
   document.getElementById('canvas').addEventListener('click',function(evt){
     var e = drawFuncs.getMousePosition();
     var h = HexAPI.engine.hexAtPoint(HexAPI.grid.layout,{x:e[0], y:e[1]});
     var hex = drawFuncs.convertToRealHex(h.q+'.'+h.r+'.'+h.s);
+    console.log(hex);
+    origion = hex;
     drawFuncs.reset();
     drawFuncs.drawLOS(hex,4);
 
@@ -240,10 +250,13 @@
     var hex = HexAPI.grid.map[h.q+'.'+h.r+'.'+h.s];
 
     drawFuncs.reset();
-    drawFuncs.drawLOS(hex,6);
+  //  drawFuncs.drawLOS(hex,6);
+
+    drawFuncs.drawPath(hex,origion);
     drawFuncs.outlineList([hex]);
 
   }, false);
+  origion = drawFuncs.convertToRealHex("21.-3.-18");
 
 </script>
 </body>
