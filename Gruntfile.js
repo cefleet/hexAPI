@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     uglify: {
       all_src : {
         options : {
-          sourceMap : true,
+          sourceMap : false,
           sourceMapName : 'build/HexAPI.min.map',
           compress: {
           //  drop_console: true

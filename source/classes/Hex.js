@@ -65,16 +65,19 @@ HexAPI.Hex.prototype = {
   },
 
   _aStarGetPathTo : function(endHex,obstacles,list){
+
     var i;
 
   //  if(!this._aStarGrid){
-      this._astarGridSetup(obstacles);
+      this._astarGridSetup(obstacles,endHex);
   //  }
     var grid = this._aStarGrid;
     for(i = 0; i < grid.length; i++){
       if(grid[i].id === this.id){
         start = grid[i];
       }
+
+      //right now if end is on an enemy it causes a problem
       if(grid[i].id === endHex.id){
         end = grid[i];
       }
@@ -123,7 +126,7 @@ HexAPI.Hex.prototype = {
                }
                */
                //TODO this is another place we could have obstacles
-               if(neighbor.closed || neighbor.isObstacle){
+               if(!neighbor || neighbor.closed || neighbor.isObstacle){
                  continue;
                }
                // g score is the shortest distance from start to current node, we need to check if
@@ -168,14 +171,16 @@ HexAPI.Hex.prototype = {
       }
     }
   },
-  _astarGridSetup : function(obstacles){
+  _astarGridSetup : function(obstacles,e){
     var grid = [];
     for(var hex in this.grid.map){
       var nHex = this._astartGridifyFromId(hex);
-      for(var i = 0; i < obstacles.length; i++){
-        var oId = obstacles[i].q+'.'+obstacles[i].r+'.'+obstacles[i].s;
-        if(oId === nHex.id){
-          nHex.isObstacle = true;
+      if(obstacles){
+        for(var i = 0; i < obstacles.length; i++){
+          var oId = obstacles[i].q+'.'+obstacles[i].r+'.'+obstacles[i].s;
+          if(oId === nHex.id && e.id !== nHex.id){
+            nHex.isObstacle = true;
+          }
         }
       }
       grid.push(nHex);
