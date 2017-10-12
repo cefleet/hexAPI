@@ -1,8 +1,8 @@
-var HexAPI = {
-  setup : function(options){
+var HexAPI = (function(){
+//It is closed at the HexAPIEnd.js
+//Is there a better way to do this?
+  var setup = function(options){
     options = options || {};
-    this.engine = new HexAPI.Engine();
-    //TODO somehow if there is no default layout
-    this.grid = new HexAPI.Grid(options.grid); 
-  }
-};
+    options.engine = Engine
+    return new Grid(options);
+  };

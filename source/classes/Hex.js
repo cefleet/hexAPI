@@ -1,17 +1,16 @@
-HexAPI.Hex = function(options) {
+var Hex = function(options) {
   this._init(options);
 };
 
-HexAPI.Hex.prototype = {
+Hex.prototype = {
   _init: function(options){
-    this.engine = HexAPI.engine;
-    this.grid = options.grid || HexAPI.grid;
-
+    this.grid = options.grid;
+    this.engine = this.grid.engine;
     options = options || {};
     this.q = options.q || 0;
     this.r = options.r || 0;
     this.s = options.s || 0;
-    //TODO Save Edges
+    //TODO Save Edges 
 
     this.id = this.q+'.'+this.r+'.'+this.s;
     this._setCenter();
@@ -63,6 +62,8 @@ HexAPI.Hex.prototype = {
     }
     return path;
   },
+
+//TODO I'm going to have to change this quite a bit.
 
   _aStarGetPathTo : function(endHex,obstacles,list){
 

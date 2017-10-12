@@ -1,15 +1,14 @@
-HexAPI.Grid = function(options) {
+var Grid = function(options) {
   this._init(options);
 };
 
-HexAPI.Grid.prototype = {
+Grid.prototype = {
   _init: function(options){
-    this.engine = HexAPI.engine;
-
+    this.engine = options.engine;
     options = options || {};
     this.hexSize = options.hexSize || {x:30,y:30};
     this.origion = options.origion || {x:0,y:0};
-    this.orientation = options.orientation || 'flat';
+    this.orientation = options.orientation || 'pointy';
 
     this.layout = this.engine.createLayout(this.hexSize, this.origion, this.orientation);
 
@@ -17,6 +16,10 @@ HexAPI.Grid.prototype = {
     this.cols = options.cols || 20;
 
     this._createMap();
+  },
+
+  getHexList: function(){
+    return Object.keys(this.map);
   },
 
   getHexAtPoint : function(p){

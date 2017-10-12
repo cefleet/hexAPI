@@ -31,7 +31,8 @@ module.exports = function(grunt) {
             'source/classes/HexAPI.js',
             'source/classes/Engine.js',
             'source/classes/Grid.js',
-            'source/classes/Hex.js'
+            'source/classes/Hex.js',
+            'source/classes/HexAPIEnd.js'
           ]
         }
       }
@@ -40,7 +41,7 @@ module.exports = function(grunt) {
     watch: {
       testAndCombine : {
         files : ['source/classes/**/*.js'],
-        tasks: ['jshint','concat','uglify']
+        tasks: ['concat','uglify']
       }
     }
   });

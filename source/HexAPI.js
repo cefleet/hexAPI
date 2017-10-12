@@ -1,110 +1,50 @@
-var HexAPI = {
-  setup : function(options){
+var HexAPI = (function(){
+//It is closed at the HexAPIEnd.js
+//Is there a better way to do this?
+  var setup = function(options){
     options = options || {};
-    this.engine = new HexAPI.Engine();
-    //TODO somehow if there is no default layout
-    this.grid = new HexAPI.Grid(options.grid); 
-  }
-};
+    options.engine = Engine
+    return new Grid(options);
+  };
 
-HexAPI.Engine = function(){
-  this._init();
-};
+var Engine = (function(){
+  /*
+    private functions
+  */
 
-HexAPI.Engine.prototype = {
-  _init : function(){
-    this.EVEN =  1;
-    this.ODD = -1;
-    this._createLayout();
-    this._createDirections();
-    this._createDiagonals();
-  },
-
-  _createLayout : function(){
-    this.LAYOUT = {
-      POINTY : this._orientation(Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5),
-      FLAT : this._orientation(3.0 / 2.0, 0.0, Math.sqrt(3.0) / 2.0, Math.sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, Math.sqrt(3.0) / 3.0, 0.0)
-    };
-  },
-  _createDirections : function(){
-    this.DIRECTIONS = [this._hex(1, 0, -1), this._hex(1, -1, 0), this._hex(0, -1, 1,true), this._hex(-1, 0, 1), this._hex(-1, 1, 0), this._hex(0, 1, -1)];
-  },
-
-  _createDiagonals : function(){
-    this.DIAGONALS = [this._hex(2, -1, -1), this._hex(1, -2, 1), this._hex(-1, -1, 2), this._hex(-2, 1, 1), this._hex(-1, 2, -1), this._hex(1, 1, -2)];
-  },
-
-  _hex : function(q,r,s){
+  var _hex = function(q,r,s){
      return {q: q, r: r, s: s};
-  },
+  };
 
-  _point : function(x,y){
+  var _point = function(x,y){
     return {x:x, y:y};
-  },
+  };
 
-  _hexAdd : function(a,b){
-    return this._hex(a.q + b.q, a.r + b.r, a.s + b.s);
-  },
+  var _hexAdd = function(a,b){
+    return _hex(a.q + b.q, a.r + b.r, a.s + b.s);
+  };
 
-  _hexSubtract : function(a,b){
-    return this._hex(a.q - b.q, a.r - b.r, a.s - b.s);
-  },
+  var _hexSubtract = function(a,b){
+    return _hex(a.q - b.q, a.r - b.r, a.s - b.s);
+  };
 
-  _hexScale : function(a,k){
-    return this._hex(a.q * k, a.r * k, a.s * k);
-  },
+  var _hexScale = function(a,k){
+    return _hex(a.q * k, a.r * k, a.s * k);
+  };
 
-  _direction : function(d){
-    return this.DIRECTIONS[d];
-  },
+  var _direction = function(d){
+    return DIRECTIONS[d];
+  };
 
-  _diagonal : function(d){
-    return this.DIAGONALS[d];
-  },
+  var _diagonal = function(d){
+    return DIAGONALS[d];
+  };
 
-  distanceBetween : function(hexA,hexB){
-    return (
-      Math.abs(hexA.q - hexB.q) +
-      Math.abs(hexA.q+hexA.r-hexB.q-hexB.r) +
-      Math.abs(hexA.r-hexB.r)
-    )/2;
-  },
-
-  neighborAtDirection: function(hex, direction){
-    return this._hexAdd(hex,this._direction(direction));
-  },
-
-  neighborsAtDiagonal : function(hex, direction){
-    var n = this._diagonal(direction);
-    return this._hexAdd(hex, n);
-  },
-
-  _orientation: function(f0, f1, f2, f3, b0, b1, b2, b3, start_angle) {
+  var _orientation = function(f0, f1, f2, f3, b0, b1, b2, b3, start_angle) {
     return {f0: f0, f1: f1, f2: f2, f3: f3, b0: b0, b1: b1, b2: b2, b3: b3, start_angle: start_angle};
-  },
+  };
 
-
-  createLayout : function(hexSize, origin, orientation) {
-
-    if(orientation == 'pointy'){
-      orientation = this.LAYOUT.POINTY;
-    } else {
-      orientation = this.LAYOUT.FLAT;
-    }
-
-    return {orientation: orientation, hexSize: hexSize, origin: origin};
-  },
-
-  centerOfHex : function(layout, hex){
-    var M = layout.orientation;
-    var hexSize = layout.hexSize;
-    var origin = layout.origin;
-    var x = (M.f0 * hex.q + M.f1 * hex.r) * hexSize.x;
-    var y = (M.f2 * hex.q + M.f3 * hex.r) * hexSize.y;
-    return this._point(x + origin.x, y + origin.y);
-  },
-
-  _roundToHex : function(hex){
+  var _roundToHex = function(hex){
     var q = Math.trunc(Math.round(hex.q));
     var r = Math.trunc(Math.round(hex.r));
     var s = Math.trunc(Math.round(hex.s));
@@ -124,80 +64,127 @@ HexAPI.Engine.prototype = {
         {
             s = -q - r;
         }
-    return this._hex(q, r, s);
-  },
+    return _hex(q, r, s);
+  };
 
-  _cornerOffset : function(layout,corner){
+  var _cornerOffset = function(layout,corner){
     var M = layout.orientation;
     var hexSize = layout.hexSize;
     var angle = 2.0 * Math.PI * (corner + M.start_angle) / 6;
-    return this._point(hexSize.x * Math.cos(angle), hexSize.y * Math.sin(angle));
-  },
+    return _point(hexSize.x * Math.cos(angle), hexSize.y * Math.sin(angle));
+  };
 
-  cornersOfHex : function(layout, h){
+  var _hexLerp = function(a, b, t){
+    return _hex(a.q+(b.q-a.q)*t, a.r+(b.r-a.r)*t, a.s+(b.s-a.s)*t);
+  };
+
+  var _defineLineBetweenHexes = function(a, b){
+    var N = distanceBetween(a, b);
+    var results = [];
+    var step = 1.0 / Math.max(N, 1);
+    for (var i = 0; i <= N; i++) {
+      var l = _hexLerp(a, b, step*i);
+      results.push(_roundToHex(l));
+    }
+    return results;
+  };
+
+
+  /*
+    Public
+
+  */
+
+  var distanceBetween = function(hexA,hexB){
+    return (
+      Math.abs(hexA.q - hexB.q) +
+      Math.abs(hexA.q+hexA.r-hexB.q-hexB.r) +
+      Math.abs(hexA.r-hexB.r)
+    )/2;
+  };
+
+  var neighborAtDirection = function(hex, direction){
+    return _hexAdd(hex,_direction(direction));
+  };
+
+  var neighborsAtDiagonal = function(hex, direction){
+    var n = _diagonal(direction);
+    return _hexAdd(hex, n);
+  };
+
+
+  var createLayout = function(hexSize, origin, orientation) {
+
+    if(orientation == 'pointy'){
+      orientation = LAYOUT.POINTY;
+    } else {
+      orientation = LAYOUT.FLAT;
+    }
+
+    return {orientation: orientation, hexSize: hexSize, origin: origin};
+  };
+
+  var centerOfHex = function(layout, hex){
+    var M = layout.orientation;
+    var hexSize = layout.hexSize;
+    var origin = layout.origin;
+    var x = (M.f0 * hex.q + M.f1 * hex.r) * hexSize.x;
+    var y = (M.f2 * hex.q + M.f3 * hex.r) * hexSize.y;
+    return _point(x + origin.x, y + origin.y);
+  };
+
+
+
+  var cornersOfHex = function(layout, h){
     var corners = [];
-    var center = this.centerOfHex(layout, h);
+    var center = centerOfHex(layout, h);
     for (var i = 1; i <= 6; i++){
         l = i;
         if(l === 6){
           l = 0;
         }
-        var offset = this._cornerOffset(layout, i);
-        corners.push(this._point(center.x + offset.x, center.y + offset.y));
+        var offset = _cornerOffset(layout, i);
+        corners.push(_point(center.x + offset.x, center.y + offset.y));
     }
     return corners;
-  },
+  };
 
-  hexAtPoint : function(layout, p){
+  var hexAtPoint = function(layout, p){
     var M = layout.orientation;
     var hexSize = layout.hexSize;
     var origin = layout.origin;
-    var pt = new this._point((p.x - origin.x) / hexSize.x, (p.y - origin.y) / hexSize.y);
+    var pt = _point((p.x - origin.x) / hexSize.x, (p.y - origin.y) / hexSize.y);//this did have a new in front of point?
     var q = M.b0 * pt.x + M.b1 * pt.y;
     var r = M.b2 * pt.x + M.b3 * pt.y;
-    var frHex = this._hex(q, r, -q - r);//results in a fractional hex thus rounding
-    return this._roundToHex(frHex);
-  },
+    var frHex = _hex(q, r, -q - r);//results in a fractional hex thus rounding
+    return _roundToHex(frHex);
+  };
 
-  getHexesWithinDistance : function(hex,dist){
+  var getHexesWithinDistance = function(hex,dist){
     var results = [{q:hex.q,r:hex.r,s:hex.s}];
     for(var i = 1; i <= dist; i++){
-      var n = this.getHexesAtDistance(hex,i);
+      var n = getHexesAtDistance(hex,i);
       for(var l = 0; l < n.length; l++){
         results.push(n[l]);
       }
     }
     return results;
-  },
+  };
 
-  getHexesAtDistance : function(hex,dis){
+  var getHexesAtDistance = function(hex,dis){
     var results = [];
-    var pHex = this._hexAdd(hex,this._hexScale(this._direction(4), dis));
+    var pHex = _hexAdd(hex,_hexScale(_direction(4), dis));
     for(var i = 0; i < 6; i++){
       for(var j = 0; j < dis; j++){
         results.push(pHex);
-        pHex = this.neighborAtDirection(pHex,i);
+        pHex = neighborAtDirection(pHex,i);
       }
     }
     return results;
-  },
+  };
 
-  _hexLerp : function(a, b, t){
-    return this._hex(a.q+(b.q-a.q)*t, a.r+(b.r-a.r)*t, a.s+(b.s-a.s)*t);
-  },
 
-  _defineLineBetweenHexes : function(a, b){
-    var N = this.distanceBetween(a, b);
-    var results = [];
-    var step = 1.0 / Math.max(N, 1);
-    for (var i = 0; i <= N; i++) {
-      var l = this._hexLerp(a, b, step*i);
-      results.push(this._roundToHex(l));
-    }
-    return results;
-  },
-
-  checkIfLinesIntersect: function(l1,l2){
+  var checkIfLinesIntersect = function(l1,l2){
     var line1StartX, line1StartY, line1EndX, line1EndY, line2StartX,
 		line2StartY, line2EndX, line2EndY, denominator, a, b, numerator1,
 		numerator2, result = false;
@@ -218,6 +205,7 @@ HexAPI.Engine.prototype = {
     if (denominator === 0) {
       return result;
     }
+
     a = line1StartY - line2StartY;
     b = line1StartX - line2StartX;
     numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
@@ -230,22 +218,51 @@ HexAPI.Engine.prototype = {
         result = true;
     }
     return result;
-  }
+  };
 
-};
+  /*
+    Do Stuff
+  */
+  var LAYOUT = {
+    POINTY : _orientation(Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5),
+    FLAT : _orientation(3.0 / 2.0, 0.0, Math.sqrt(3.0) / 2.0, Math.sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, Math.sqrt(3.0) / 3.0, 0.0)
+  };
 
-HexAPI.Grid = function(options) {
+  var DIRECTIONS =  [_hex(1, 0, -1), _hex(1, -1, 0), _hex(0, -1, 1,true), _hex(-1, 0, 1), _hex(-1, 1, 0), _hex(0, 1, -1)];
+  var DIAGONALS = [_hex(2, -1, -1), _hex(1, -2, 1), _hex(-1, -1, 2), _hex(-2, 1, 1), _hex(-1, 2, -1), _hex(1, 1, -2)];
+
+  /*
+  return public
+  */
+
+  var funcs = {
+    distanceBetween:distanceBetween,
+    neighborAtDirection:neighborAtDirection,
+    neighborsAtDiagonal:neighborsAtDiagonal,
+    createLayout:createLayout,
+    centerOfHex:centerOfHex,
+    cornersOfHex:cornersOfHex,
+    hexAtPoint:hexAtPoint,
+    getHexesWithinDistance:getHexesWithinDistance,
+    getHexesAtDistance:getHexesAtDistance,
+    checkIfLinesIntersect:checkIfLinesIntersect
+  };
+
+  return funcs;
+
+})();
+
+var Grid = function(options) {
   this._init(options);
 };
 
-HexAPI.Grid.prototype = {
+Grid.prototype = {
   _init: function(options){
-    this.engine = HexAPI.engine;
-
+    this.engine = options.engine;
     options = options || {};
     this.hexSize = options.hexSize || {x:30,y:30};
     this.origion = options.origion || {x:0,y:0};
-    this.orientation = options.orientation || 'flat';
+    this.orientation = options.orientation || 'pointy';
 
     this.layout = this.engine.createLayout(this.hexSize, this.origion, this.orientation);
 
@@ -253,6 +270,10 @@ HexAPI.Grid.prototype = {
     this.cols = options.cols || 20;
 
     this._createMap();
+  },
+
+  getHexList: function(){
+    return Object.keys(this.map);
   },
 
   getHexAtPoint : function(p){
@@ -291,20 +312,19 @@ HexAPI.Grid.prototype = {
 
 };
 
-HexAPI.Hex = function(options) {
+var Hex = function(options) {
   this._init(options);
 };
 
-HexAPI.Hex.prototype = {
+Hex.prototype = {
   _init: function(options){
-    this.engine = HexAPI.engine;
-    this.grid = options.grid || HexAPI.grid;
-
+    this.grid = options.grid;
+    this.engine = this.grid.engine;
     options = options || {};
     this.q = options.q || 0;
     this.r = options.r || 0;
     this.s = options.s || 0;
-    //TODO Save Edges
+    //TODO Save Edges 
 
     this.id = this.q+'.'+this.r+'.'+this.s;
     this._setCenter();
@@ -356,6 +376,8 @@ HexAPI.Hex.prototype = {
     }
     return path;
   },
+
+//TODO I'm going to have to change this quite a bit.
 
   _aStarGetPathTo : function(endHex,obstacles,list){
 
@@ -561,5 +583,15 @@ HexAPI.Hex.prototype = {
   },
 
 };
+
+
+  return {
+    setup:setup,
+    Engine:Engine,
+    Grid:Grid,
+    Hex:Hex
+  }
+
+})();
 
 //# sourceMappingURL=HexAPI.js.map
