@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     uglify: {
-      all_src : {
+      site : {
         options : {
           sourceMap : false,
           sourceMapName : 'build/HexAPI.min.map',
@@ -14,6 +14,17 @@ module.exports = function(grunt) {
         },
         src : 'source/HexAPI.js',
         dest : 'build/HexAPI.min.js'
+      },
+      node : {
+        options : {
+          sourceMap : false,
+          sourceMapName : 'build/HexAPI.node.min.map',
+          compress: {
+          //  drop_console: true
+          }
+        },
+        src : 'source/HexAPI.node.js',
+        dest : 'build/HexAPI.node.min.js'
       }
     },
 
@@ -33,6 +44,18 @@ module.exports = function(grunt) {
             'source/classes/Grid.js',
             'source/classes/Hex.js',
             'source/classes/HexAPIEnd.js'
+          ]
+        }
+      },
+      node : {
+        files : {
+          'source/HexAPI.node.js': [
+            'source/classes/HexAPI.js',
+            'source/classes/Engine.js',
+            'source/classes/Grid.js',
+            'source/classes/Hex.js',
+            'source/classes/HexAPIEnd.js',
+            'source/classes/nodeExport.js'
           ]
         }
       }
