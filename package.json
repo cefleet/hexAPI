@@ -4,9 +4,10 @@
   "version": "0.0.1",
   "dependencies": {
     "grunt": "*",
-    "grunt-contrib-uglify":"*",
-    "grunt-contrib-concat":"*",
-    "grunt-contrib-jshint":"*",
-    "grunt-contrib-watch":"*"
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "package.json": "^2.0.1"
   }
 }
