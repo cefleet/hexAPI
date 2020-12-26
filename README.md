@@ -92,7 +92,7 @@ const {map,hexAtPoint,pathTo} = Grid(options);
 - Obstacles is an optional argument that is an array of hexes.
 - This functions relies on the grid map and will never return items outside of the grid.
 ```js
-    let thePath = pathTo(hexA,hexB,obstacles);
+    let thePath = pathTo(startHex,endHex,obstacles);
 ```
 ### Engine
 - The Engine component handles all of the math directly related to the hexes. It operates independantly of size or orientation of the grid.

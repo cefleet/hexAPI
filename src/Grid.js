@@ -97,7 +97,7 @@ const Grid = ({hexSize={x:30,y:30}, origin={x:0,y:0}, type='pointy', rows=10, co
         const straight = getHexLineBetweenHexes(start,end);
       
         //If every item in the line is in the hexes group but not in the hexes group
-        if(!straight.find(h=>map.find(g=>hexId(g) == hexId(h)) ? obstacles.find(o=>hexId(o) == hexId(h)):tue)) return straight;
+        if(!straight.find(h=>map.find(g=>hexId(g) == hexId(h)) ? obstacles.find(o=>hexId(o) == hexId(h)):true)) return straight;
 
         //cosider how to speed this up.
         const grid = astarGridSetup(map,obstacles);

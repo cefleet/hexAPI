@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HexAPI example</title>
+    <style>
+        body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            width:100%;
+            margin:20px 0;
+            padding:40px 0;
+            background: #efe;
+        }
+        canvas {
+            background: #fff;
+            border:6px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hex API example</h1>
+    <p><strong>Instructions </strong>Click on a hex to create an obstacle. The path will be from the last clicked hex to wherever the mouse is.    
+        </p>
+    <div class="container">
+        <canvas id="canvas" width='680' height='580'></canvas>
+    </div>
+    <script src="example_script.js" type="module"></script>
+</body>
+</html>
