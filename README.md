@@ -8,11 +8,34 @@ It is an adaptation from the the articles written by Amit Patel on the subject.
 Read more here : http://www.redblobgames.com/grids/hexagons/
 
 ## Installation
-- CDN comming ... eventually (possibly)
-- NPM module for Node.js comming ... eventually (possibly)
-### Currernt steps
-1. Clone repository into your project.
-2. Import needed components
+### Using Snowpack 
+https://www.snowpack.dev/tutorials/getting-started
+1. ```sh
+    npm install hexapi
+2. ```js
+    //in index.js
+    import {Grid, Engine} from "hexapi"
+### Using Node
+https://nodejs.org/api/packages.html#packages_modules_packages
+1. ```js
+    // package.json
+    {
+        "name":"you_project_name",
+        "type":"module",
+        ...
+    }
+> Without additional work, this will requre all packages to use esm modules and will cause some older legacy packages to not work.
+
+2. ```sh
+    npm install hexapi
+3. ```js
+    import {Grid,Engine} from "hexapi";
+### Clone from github
+1. ```sh
+    cd ~/project/libs/
+    git clone https://github.com/cefleet/hexAPI.git
+2. Clone repository into your project.
+3. Import needed components
 ```js
     import {Grid,Engine} from "./libs/HexApi.js";
 ```

@@ -1,5 +1,5 @@
 //import and get the needed functions
-import {Grid,Engine} from "/HexApi.js";
+import {Grid,Engine} from "./src/HexApi.js";
 const {getAllHexesWithinDistance} = Engine;
 const {pathTo,cornersOfHex,hexAtPoint,map} = Grid({hexSize:{x:19,y:19},origin:{x:20,y:20},rows:20,cols:20});
 
