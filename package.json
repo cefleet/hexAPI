@@ -1,0 +1,26 @@
+{
+  "name": "hexapi",
+  "version": "1.0.3",
+  "description": "Javascript hex toolkit with astar pathfinding",
+  "main": "./src/HexApi.js",
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cefleet/hexAPI.git"
+  },
+  "keywords": [
+    "hex",
+    "es6",
+    "esm",
+    "astar"
+  ],
+  "author": "Clint Fleetwood",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cefleet/hexAPI/issues"
+  },
+  "homepage": "https://github.com/cefleet/hexAPI#readme"
+}
