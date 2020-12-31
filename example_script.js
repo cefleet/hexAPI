@@ -1,7 +1,7 @@
 //import and get the needed functions
 import {Grid,Engine} from "./src/HexApi.js";
 const {getAllHexesWithinDistance} = Engine;
-const {pathTo,cornersOfHex,hexAtPoint,map} = Grid({hexSize:{x:19,y:19},origin:{x:20,y:20},rows:20,cols:20});
+const {pathToPromise,cornersOfHex,hexAtPoint,map} = Grid({hexSize:{x:19,y:19},origin:{x:20,y:20},rows:20,cols:20});
 
 
 //Get the canvas item for drawing
@@ -10,6 +10,7 @@ const ctx = canvas.getContext("2d");
 
 //setup some module wide variables
 let markedHex = null;
+let curHex = null;
 let obstacles = [];
 
 //common way to re-draw a canvas
@@ -47,18 +48,26 @@ const markHex = (hex) => {
     markedHex = hex;
 }
 
-const mouseMove = ({x,y}) => {
+const mouseMove = async ({x,y}) => {
+
+    const hex = hexAtPoint({x,y});
+    
+    if(hex === curHex) return;//no need to re-render inside the same hex.
+
+    curHex = hex;
+
     clear();
     drawMap();
     
     //gets the hex at the point
-    const hex = hexAtPoint({x,y});
+    
 
     highlightArea(hex,2);
     if(markedHex) {
         //If there is a marked hex, a path will be found. 
         //Then each hex in the path will be drawn from the marked hex to the hex under. 
-        pathTo(markedHex,hex,obstacles).forEach(h=>drawHex(h,'yello','orange'));
+        let res = await pathToPromise(markedHex,hex,obstacles)
+        res.forEach(h=>drawHex(h,'yello','orange'));
         //draws the marked hex
         drawHex(markedHex,'green', 'yellow');
     }

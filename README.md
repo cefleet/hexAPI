@@ -37,7 +37,7 @@ https://nodejs.org/api/packages.html#packages_modules_packages
 2. Clone repository into your project.
 3. Import needed components
 ```js
-    import {Grid,Engine} from "./libs/HexApi.js";
+    import {Grid,Engine} from "./libs/hexapi/HexApi.js";
 ```
 
 ## API
@@ -117,6 +117,20 @@ const {map,hexAtPoint,pathTo} = Grid(options);
 ```js
     let thePath = pathTo(startHex,endHex,obstacles);
 ```
+
+#### pathToPromise
+**Resolves** - *Array of Hexes* - from the start hex to the end hex.
+- This is a promise wrapper around the pathTo function.
+```js
+
+    const usePath = (hexes) =>{
+        console.log(hexes)
+    }
+
+    pathToPromise(startHex,endHex,obstacles)
+    .then(usePath)
+```
+
 ### Engine
 - The Engine component handles all of the math directly related to the hexes. It operates independantly of size or orientation of the grid.
 - Importing the Engine returns an object of the needed functions.

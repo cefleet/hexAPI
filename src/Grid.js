@@ -91,6 +91,10 @@ const Grid = ({hexSize={x:30,y:30}, origin={x:0,y:0}, type='pointy', rows=10, co
     };
 
     //This uses astar
+    const pathToPromise = (start,end,obstacles) => {
+        return new Promise((resolve) =>resolve(pathTo(start,end,obstacles)))
+    };
+
     const pathTo = (start,end,obstacles=[])=>{
 
         //first draw a straigh line. This assumes that the grid is filled.
@@ -168,7 +172,7 @@ const Grid = ({hexSize={x:30,y:30}, origin={x:0,y:0}, type='pointy', rows=10, co
            return [];
       };
 
-    return {map, hexAtPoint,cornersOfHex,centerOfHex, pathTo}
+    return {map, hexAtPoint,cornersOfHex,centerOfHex, pathTo, pathToPromise}
 }
 
 export default Grid;
