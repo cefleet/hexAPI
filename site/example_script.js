@@ -51,9 +51,8 @@ const markHex = (hex) => {
 const mouseMove = async ({x,y}) => {
 
     const hex = hexAtPoint({x,y});
-    
-    if(hex === curHex) return;//no need to re-render inside the same hex.
-
+    //no need to re-render inside the same hex.
+    if(curHex && `${hex.q}.${hex.r}.${hex.s}` == `${curHex.q}.${curHex.r}.${curHex.s}`) return;
     curHex = hex;
 
     clear();
