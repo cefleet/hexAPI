@@ -71,7 +71,7 @@ const mouseMove = async ({x,y}) => {
         drawHex(markedHex,'green', 'yellow');
     }
     //draws the hex under the map
-    drawHex(hex,'blue','green');
+    drawHex(hex,'blue','red');
     //draw all of the obstacles
     obstacles.forEach(o=>drawHex(o,'orange','black'));
 }
