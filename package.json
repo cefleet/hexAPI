@@ -3,9 +3,10 @@
   "version": "1.0.3",
   "description": "Javascript hex toolkit with astar pathfinding",
   "main": "./src/HexApi.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"serve ."
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/cefleet/hexAPI/issues"
   },
-  "homepage": "http://cefleet.github.io/hexAPI/"
+  "homepage": "http://cefleet.github.io/hexAPI/",
+  "dependencies": {
+    "serve": "^11.3.2"
+  }
 }
